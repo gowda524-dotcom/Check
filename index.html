@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page12 - Cricket Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom, #003366, #66ccff);
+      overflow: hidden;
+      color: white;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    #scoreboard {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+    #game-area {
+      margin-top: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: hotpink;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: deeppink;
+    }
+    #result {
+      margin-top: 25px;
+      font-size: 26px;
+      font-weight: bold;
+      display: none;
+    }
+    .quiz-box {
+      margin-top: 20px;
+      display: none;
+    }
+    input {
+      font-size: 18px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      text-align: center;
+    }
+    /* Floating emojis */
+    .float {
+      position: absolute;
+      font-size: 26px;
+      animation: floatUp 8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+      to { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cricket Match with My Panda 🐼</h1>
+  <div id="scoreboard">Her Batting 🐼 | Score: 0/0 (0 balls)</div>
+
+  <div id="game-area">
+    <button id="action-btn" onclick="playBall()">Bowl 🎳</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="quiz-box" id="quiz-box">
+    <p><b>Enjoyed the match Panda 🐼😚? Say anything to go to next page 👉</b></p>
+    <input type="text" id="quiz-answer" placeholder="Type here...">
+    <button onclick="nextPage()">Submit</button>
+  </div>
+
+  <!-- Fireworks + Emojis -->
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    let inning = 1; // 1 = Her batting, 2 = Your batting
+    let ball = 0;
+    let herScore = 0, yourScore = 0;
+    let herWickets = 0, yourWickets = 0;
+    const maxBalls = 6;
+
+    function playBall() {
+      if (inning === 1 && ball < maxBalls) {
+        ball++;
+        let outcome = getOutcome();
+        if (outcome === "W") {
+          herWickets++;
+          showMessage("Wicket! Panda is OUT 😲");
+        } else {
+          herScore += outcome;
+          if (outcome >= 4) launchFireworks();
+          showMessage(`Panda hits ${outcome} run(s) 🐼`);
+        }
+        updateScoreboard("Her Batting 🐼", herScore, herWickets, ball);
+        if (ball === maxBalls) {
+          inning = 2;
+          ball = 0;
+          document.getElementById("action-btn").innerText = "Bat 🏏";
+          showMessage("Now it's YOUR turn to Bat 😎");
+        }
+      } 
+      else if (inning === 2 && ball < maxBalls) {
+        ball++;
+        let outcome = getOutcome();
+        if (outcome === "W") {
+          yourWickets++;
+          showMessage("Oh no! You're OUT 😅");
+        } else {
+          yourScore += outcome;
+          if (outcome >= 4) launchFireworks();
+          showMessage(`You hit ${outcome} run(s) 😍`);
+        }
+        updateScoreboard("Your Batting 😎", yourScore, yourWickets, ball);
+        if (ball === maxBalls) {
+          endGame();
+        }
+      }
+    }
+
+    function getOutcome() {
+      let outcomes = [0, 1, 2, 3, 4, 6, "W"];
+      return outcomes[Math.floor(Math.random() * outcomes.length)];
+    }
+
+    function updateScoreboard(player, score, wickets, balls) {
+      document.getElementById("scoreboard").innerText =
+        `${player} | Score: ${score}/${wickets} (${balls} balls)`;
+    }
+
+    function showMessage(msg) {
+      let r = document.getElementById("result");
+      r.style.display = "block";
+      r.innerText = msg;
+    }
+
+    function endGame() {
+      let r = document.getElementById("result");
+      if (yourScore > herScore) {
+        r.innerText = `🏆 You win against your Panda! 🎉 Score: ${yourScore} vs ${herScore}`;
+      } else if (yourScore < herScore) {
+        r.innerText = `🐼 Panda wins! 😍 Score: ${herScore} vs ${yourScore}`;
+      } else {
+        r.innerText = `🤝 It's a Tie! Both scored ${yourScore}`;
+      }
+      launchFireworks();
+      document.getElementById("quiz-box").style.display = "block";
+      document.getElementById("action-btn").style.display = "none";
+    }
+
+    function nextPage() {
+      let ans = document.getElementById("quiz-answer").value.trim();
+      if (ans.length > 0) {
+        window.location.href = "Page13.html";
+      }
+    }
+
+    // Floating emojis
+    const emojis = ["🏏","🐼","😚","🎆","🎇","🥳"];
+    for (let i = 0; i < 40; i++) {
+      let span = document.createElement("span");
+      span.className = "float";
+      span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.left = Math.random() * 90 + "vw";
+      span.style.animationDuration = (5 + Math.random() * 5) + "s";
+      document.body.appendChild(span);
+    }
+
+    // Fireworks effect
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+
+    function launchFireworks() {
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          angle: Math.random() * 2 * Math.PI,
+          speed: Math.random() * 5 + 2,
+          radius: Math.random() * 3 + 2,
+          alpha: 1
+        });
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed;
+        p.alpha -= 0.02;
+        ctx.fillStyle = `rgba(255,${Math.floor(Math.random()*255)},0,${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+        ctx.fill();
+        if (p.alpha <= 0) particles.splice(i, 1);
+      });
+      requestAnimationFrame(animateFireworks);
+    }
+    animateFireworks();
+  </script>
+</body>
+</html>
