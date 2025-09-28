@@ -3,100 +3,57 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Page12 — 2-over Cricket (Realistic)</title>
+<title>Page12 — Realistic 2-over Cricket (Interactive)</title>
 <style>
-  :root {
-    --stage-w: 1000px;
-    --stage-h: 520px;
-  }
-  html,body{height:100%;margin:0;background:#000; font-family: Arial, Helvetica, sans-serif; color:#fff}
-  body {
+  :root{ --stage-w:1000px; --stage-h:520px; }
+  html,body{height:100%;margin:0;background:#000;font-family:Arial,Helvetica,sans-serif;color:#fff}
+  body{
     background: url('stadium.jpg') center/cover no-repeat fixed;
-    display:flex; flex-direction:column; align-items:center;
+    display:flex;flex-direction:column;align-items:center;
   }
+  header{ text-align:center; margin-top:14px; text-shadow:0 4px 12px rgba(0,0,0,.6) }
+  header h1{margin:0;font-size:26px}
+  header p{margin:6px 0 0; font-weight:600; opacity:.95}
 
-  header { text-align:center; margin-top:18px; text-shadow: 0 4px 14px rgba(0,0,0,0.7);}
-  header h1{font-size:28px;margin:0}
-  header p{margin:6px 0 0 0; font-weight:600; opacity:0.95}
+  .stage-wrap{ width:var(--stage-w); max-width:calc(100% - 20px); height:var(--stage-h); margin:18px 0; position:relative; border-radius:12px; overflow:visible; }
+  canvas#stage{ width:100%; height:100%; border-radius:12px; display:block; background: rgba(0,0,0,0.3); box-shadow:0 20px 60px rgba(0,0,0,.6) }
 
-  /* Stage canvas container */
-  .stage-wrap {
-    width: var(--stage-w);
-    height: var(--stage-h);
-    max-width: calc(100% - 20px);
-    margin: 18px auto;
-    position: relative;
-    border-radius: 12px;
-    overflow: visible;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
-  }
-
-  canvas#stage {
-    width:100%;
-    height:100%;
-    border-radius:12px;
-    display:block;
-    background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.35));
-  }
-
-  /* Scoreboard */
-  .info {
-    width: var(--stage-w);
-    max-width: calc(100% - 20px);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top: 10px;
-    gap:10px;
-  }
-  .scoreboard {
-    background: rgba(0,0,0,0.6);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-weight:700;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-  }
-  .controls {
-    background: rgba(0,0,0,0.6);
-    padding: 8px 12px;
-    border-radius: 10px;
-  }
-  button { font-weight:700; border-radius:8px; border:none; padding:10px 14px; cursor:pointer }
+  .info { width:var(--stage-w); max-width:calc(100% - 20px); display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:6px;}
+  .scoreboard { background: rgba(0,0,0,0.6); padding:10px 14px; border-radius:10px; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,.6) }
+  .controls { background: rgba(0,0,0,0.6); padding:8px 12px; border-radius:10px; display:flex; gap:8px; align-items:center;}
+  button { font-weight:700; border-radius:8px; border:none; padding:8px 12px; cursor:pointer }
   .playBtn { background:#ff5fa8; color:#fff }
   .muteBtn { background:#444; color:#fff }
 
-  /* Floating emojis */
-  .floating-emoji { position: absolute; z-index: 80; pointer-events:none; font-size:28px; }
+  .message { margin-top:8px; font-weight:800; min-height:28px; text-align:center; text-shadow:0 3px 10px rgba(0,0,0,.6) }
 
-  /* Quiz box eventually shown */
-  .quiz {
-    display:none;
-    margin-top:14px;
-    background: rgba(0,0,0,0.7);
-    padding: 14px;
-    border-radius: 12px;
-    width: 420px;
-    max-width: 94%;
-    text-align:center;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-  }
-  .quiz input { width:72%; padding:8px 10px; border-radius:8px; border:none; font-size:16px }
-  .quiz button { padding:8px 12px; margin-left:8px; background:limegreen; color:#fff; font-weight:700 }
+  /* control areas for manual actions */
+  .manual-controls { display:flex; gap:12px; margin-top:10px; align-items:center }
+  .big-btn { font-size:18px; padding:12px 18px; border-radius:10px; background:deepskyblue; color:#000; font-weight:800; cursor:pointer }
+  .big-btn.red { background:crimson; color:#fff }
 
-  /* small responsive */
+  /* quiz */
+  .quiz { display:none; margin-top:12px; background:rgba(0,0,0,0.7); padding:14px; border-radius:12px; width:420px; max-width:94%; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.5) }
+  .quiz input{ width:68%; padding:8px; border-radius:8px; border:none; font-size:16px }
+  .quiz button{ padding:8px 12px; margin-left:8px; background:limegreen; border-radius:8px; font-weight:700; color:#fff; border:none; cursor:pointer }
+
+  /* floating emoji style */
+  .floating { position:absolute; z-index:90; pointer-events:none; font-size:28px; }
+
+  /* responsive */
   @media (max-width:760px){
     header h1{font-size:20px}
-    .floating-emoji{font-size:20px}
+    .big-btn{font-size:16px;padding:10px 14px}
   }
 </style>
 </head>
 <body>
   <header>
-    <h1>Real Match — You vs Panda 🐼 (2 overs)</h1>
-    <p>Panda bats first • Automatic bat swing • realistic ball & bat animation</p>
+    <h1>Interactive Match — You vs Panda 🐼 (2 overs)</h1>
+    <p>Over 1: Panda batting (manual) — Over 2: You batting (auto). Controls change accordingly.</p>
   </header>
 
-  <div class="stage-wrap" id="stageWrap">
+  <div class="stage-wrap">
     <canvas id="stage" width="1000" height="520"></canvas>
   </div>
 
@@ -108,485 +65,423 @@
     </div>
   </div>
 
-  <div id="message" style="margin-top:10px;font-weight:700;text-align:center"></div>
+  <div class="message" id="message">Match will start shortly...</div>
+
+  <div class="manual-controls" id="manualControls">
+    <!-- Stage-specific controls appear here -->
+    <!-- Over1 (Panda batting) shows: "HIT" button for player to click to let Panda attempt hit -->
+    <!-- Over2 (You batting) shows: "BOWL" button that Panda should press to release -->
+  </div>
 
   <div class="quiz" id="quiz">
-    <div style="font-weight:800; font-size:18px; margin-bottom:8px">Happy yaa Panda 🤗??</div>
+    <div style="font-weight:800; margin-bottom:8px">Happy yaa Panda 🤗??</div>
     <input id="quizInput" placeholder="Type anything..." />
     <button id="quizSubmit">Submit</button>
   </div>
 
-  <!-- Audio element (autoplay attempt) -->
+  <!-- audio -->
   <audio id="bgAudio" src="page12.mp3" loop></audio>
 
 <script>
-/* --------------- Setup & Globals --------------- */
+/* -------------------- Setup -------------------- */
 const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
 const scoreboardEl = document.getElementById('scoreboard');
 const messageEl = document.getElementById('message');
+const manualControls = document.getElementById('manualControls');
+const quizEl = document.getElementById('quiz');
+const quizSubmit = document.getElementById('quizSubmit');
+const bgAudio = document.getElementById('bgAudio');
 const playAudioBtn = document.getElementById('playAudio');
 const muteBtn = document.getElementById('muteAudio');
-const bgAudio = document.getElementById('bgAudio');
-
-const stageW = canvas.width;
-const stageH = canvas.height;
 
 let panda = { runs:0, balls:0, wickets:0 };
 let you = { runs:0, balls:0, wickets:0 };
-let innings = 1; // 1 => panda batting, 2 => you batting
+let inning = 1;               // 1 => Panda batting (Over1), 2 => You batting (Over2)
 const ballsPerOver = 6;
-let ballIndex = 0; // 0..5
-let isAnimating = false;
+let ballState = null;         // holds active ball object when in motion
+let isBowling = false;        // prevents double bowl
+let isMatchOver = false;
 
-/* Bowler & batter positions (pixel coords on canvas) */
-const leftX = 180, rightX = stageW-180;
-const pitchY = stageH/2 + 40;
+/* positions */
+const leftX = 160, rightX = W - 160;
+const pitchY = H/2 + 40;
 
-/* Ball state */
-let ball = null; // {x,y,vx,vy, state: 'bowling'|'flying'|'dead', outcome}
-
-/* Precompute random seed helper */
-function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-/* Try autoplay music; if blocked show play button */
-function tryPlayAudio() {
-  bgAudio.play().then(()=> {
-    playAudioBtn.style.display = 'none';
-  }).catch(()=> {
-    playAudioBtn.style.display = 'inline-block';
-  });
+/* music autoplay fallback */
+function tryPlayAudio(){
+  bgAudio.play().then(()=> playAudioBtn.style.display='none').catch(()=> playAudioBtn.style.display='inline-block');
 }
 window.addEventListener('load', tryPlayAudio);
 playAudioBtn.addEventListener('click', ()=> { bgAudio.play(); playAudioBtn.style.display='none'; });
-muteBtn.addEventListener('click', ()=> {
-  bgAudio.muted = !bgAudio.muted;
-  muteBtn.textContent = bgAudio.muted ? 'Unmute' : 'Mute';
-});
+muteBtn.addEventListener('click', ()=> { bgAudio.muted = !bgAudio.muted; muteBtn.textContent = bgAudio.muted ? 'Unmute' : 'Mute'; });
 
-/* floating emojis across whole page */
-const EMOJIS = ['🐼','😚','🫶','❤️‍🩹','🙈','😊','🥰','🏏','🎆'];
-function spawnFloatingEmoji(){
+/* floating emojis */
+const EM = ['🐼','😚','🫶','❤️‍🩹','🙈','😊','🥰','🏏','🎆'];
+function spawnFloating(){
   const el = document.createElement('div');
-  el.className = 'floating-emoji';
-  el.textContent = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-  // place across bottom area and float up
-  el.style.left = (10 + Math.random()*80) + '%';
-  el.style.top = (70 + Math.random()*25) + 'vh';
-  el.style.transition = `transform ${4+Math.random()*4}s linear, opacity ${4+Math.random()*4}s linear`;
+  el.className = 'floating';
+  el.textContent = EM[Math.floor(Math.random()*EM.length)];
+  el.style.left = (5 + Math.random()*90) + '%';
+  el.style.top = (80 + Math.random()*15) + 'vh';
+  el.style.fontSize = (18 + Math.random()*24) + 'px';
   document.body.appendChild(el);
-  // animate by translateY
-  setTimeout(()=> { el.style.transform = 'translateY(-85vh)'; el.style.opacity = 0; }, 50);
+  el.style.transition = `transform ${4+Math.random()*4}s linear, opacity ${4+Math.random()*4}s linear`;
+  setTimeout(()=> { el.style.transform = 'translateY(-85vh)'; el.style.opacity = 0; }, 60);
   setTimeout(()=> el.remove(), 9000);
 }
-setInterval(spawnFloatingEmoji, 600);
+setInterval(spawnFloating, 650);
 
-/* Fireworks (particle bursts) */
-function launchFireworks(cx, cy){
-  const count = 28;
+/* fireworks (canvas particles) */
+function fireworkBurst(cx, cy){
   const particles = [];
-  for(let i=0;i<count;i++){
+  for(let i=0;i<36;i++){
     particles.push({
-      x:cx, y:cy,
-      vx: (Math.random()*2-1) * (2+Math.random()*6),
-      vy: (Math.random()*2-1) * (2+Math.random()*6),
-      r: 2+Math.random()*3,
-      life: 0,
-      ttl: 60 + Math.random()*40,
-      color: `hsl(${Math.floor(Math.random()*360)},80%,60%)`
+      x:cx, y:cy, vx:(Math.random()*2-1)*(2+Math.random()*5), vy:(Math.random()*2-1)*(2+Math.random()*5),
+      r:2+Math.random()*3, life:0, ttl:60+Math.random()*40, color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`
     });
   }
-  // animate particles for a while
-  let frames = 0;
-  function drawFrame(){
+  let frames=0;
+  function animate(){
     frames++;
+    ctx.save();
     particles.forEach((p, idx) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.1; // gravity
-      p.life++;
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life++;
+      ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, 1 - p.life/p.ttl);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
     });
-    ctx.globalAlpha = 1;
-    if(frames < 90){ requestAnimationFrame(drawFrame); }
+    ctx.globalAlpha = 1; ctx.restore();
+    if(frames < 90) requestAnimationFrame(animate);
   }
-  requestAnimationFrame(drawFrame);
+  requestAnimationFrame(animate);
 }
 
-/* Small confetti emoji burst as DOM */
-function confettiBurst(){
-  for(let i=0;i<20;i++){
+/* small confetti DOM */
+function confetti(){
+  for(let i=0;i<18;i++){
     const el = document.createElement('div');
-    el.className = 'floating-emoji';
-    el.style.fontSize = (18+Math.random()*26) + 'px';
+    el.className = 'floating';
+    el.textContent = ['🎉','🎊','✨','💖'][Math.floor(Math.random()*4)];
     el.style.left = (40 + Math.random()*20) + '%';
-    el.style.top = (40 + Math.random()*10) + '%';
-    el.textContent = randChoice(['🎊','🎉','✨','💖']);
-    el.style.transition = `transform ${1+Math.random()*1.5}s ease-out, opacity 1.2s`;
+    el.style.top = (40 + Math.random()*8) + '%';
+    el.style.fontSize = (16 + Math.random()*30) + 'px';
     document.body.appendChild(el);
-    setTimeout(()=> { el.style.transform = `translateY(${60+Math.random()*80}px) rotate(${Math.random()*360}deg)`; el.style.opacity=0; }, 30);
-    setTimeout(()=> el.remove(), 1800);
+    el.style.transition = `transform ${1 + Math.random()*1}s ease-out, opacity 1s`;
+    setTimeout(()=> { el.style.transform = `translateY(${60 + Math.random()*80}px) rotate(${Math.random()*360}deg)`; el.style.opacity = 0; }, 30);
+    setTimeout(()=> el.remove(), 1400);
   }
 }
 
-/* draw a simple pitch, batsman and bowler figures and stumps */
-function drawStatic(){
-  // green ground rectangle
-  ctx.fillStyle = 'rgba(10,70,20,0.35)';
-  ctx.fillRect(0, stageH*0.4, stageW, stageH*0.6);
-
-  // pitch area
-  ctx.fillStyle = 'rgba(200,180,120,0.06)';
-  const pw = stageW*0.5, ph = 80;
-  ctx.fillRect((stageW-pw)/2, pitchY-40, pw, ph);
-
-  // crease lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo((stageW-pw)/2 + 30, pitchY);
-  ctx.lineTo((stageW-pw)/2 + pw - 30, pitchY);
-  ctx.stroke();
-
-  // draw stumps left and right
-  drawStumps(leftX, pitchY+12);
-  drawStumps(rightX, pitchY+12);
+/* ---------- Canvas helpers ---------- */
+function clearCanvas(){ ctx.clearRect(0,0,W,H); }
+function drawPitch(){
+  // semi-transparent ground
+  ctx.fillStyle = 'rgba(10,70,20,0.32)';
+  ctx.fillRect(0, H*0.36, W, H*0.64);
+  // pitch
+  const pw = W*0.5; ctx.fillStyle='rgba(230,210,150,0.06)'; ctx.fillRect((W-pw)/2, pitchY-40, pw, 80);
+  // crease
+  ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo((W-pw)/2+30, pitchY); ctx.lineTo((W-pw)/2+pw-30, pitchY); ctx.stroke();
+  // stumps left & right
+  drawStumps(leftX, pitchY+12); drawStumps(rightX, pitchY+12);
 }
-
-/* small stylized stumps */
-function drawStumps(x, y){
-  ctx.fillStyle = '#c88';
-  for(let i=0;i<3;i++){
-    ctx.fillRect(x - 6 + i*6, y-36, 4, 36);
-  }
+function drawStumps(x,y){
+  ctx.fillStyle='#c88';
+  for(let i=0;i<3;i++) ctx.fillRect(x - 6 + i*6, y-36, 4, 36);
 }
-
-/* draw batters and bowler simple figures */
 function drawPlayers(){
-  // Panda batter on left when batting
-  // draw player shapes at leftX and rightX positions
-  // batter head
+  // simple heads + bodies
   ctx.fillStyle = '#fff';
   // left player
-  ctx.beginPath();
-  ctx.arc(leftX, pitchY-34, 14, 0, Math.PI*2);
-  ctx.fill();
-  // body
+  ctx.beginPath(); ctx.arc(leftX, pitchY-34, 14, 0, Math.PI*2); ctx.fill();
   ctx.fillRect(leftX-10, pitchY-20, 20, 28);
-
   // right player
-  ctx.beginPath();
-  ctx.arc(rightX, pitchY-34, 14, 0, Math.PI*2);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(rightX, pitchY-34, 14, 0, Math.PI*2); ctx.fill();
   ctx.fillRect(rightX-10, pitchY-20, 20, 28);
 }
-
-/* draw bat — rotated around hinge */
-function drawBat(x, y, angle, color='#c68'){
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillStyle = color;
-  ctx.fillRect(0, -4, 60, 8); // bat blade
-  ctx.fillStyle = '#5b3';
-  ctx.fillRect(60, -6, 10, 12); // handle end
+function drawBat(x,y,angle){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
+  ctx.fillStyle='#e6b17e'; ctx.fillRect(0,-4,60,8); ctx.fillStyle='#5b3'; ctx.fillRect(60,-6,10,12);
   ctx.restore();
 }
-
-/* draw ball as small circle */
 function drawBall(b){
   if(!b) return;
-  ctx.beginPath();
-  ctx.fillStyle = '#fff';
-  ctx.arc(b.x, b.y, 6, 0, Math.PI*2);
-  ctx.fill();
+  ctx.beginPath(); ctx.fillStyle='#fff'; ctx.arc(b.x,b.y,6,0,Math.PI*2); ctx.fill();
 }
 
-/* update scoreboard DOM */
-function refreshScoreboard(){
-  scoreboardEl.textContent = `Panda: ${panda.runs}/${panda.wickets} (${panda.balls})  |  You: ${you.runs}/${you.wickets} (${you.balls})  |  Inning: ${innings===1? 'Panda batting':'You batting'}`;
+/* ---------- Match logic ---------- */
+/* outcome determination (weighted) */
+function weightedOutcome(){
+  const pool = [0,0,1,1,2,2,3,4,4,6,'W']; // tweak weights
+  return pool[Math.floor(Math.random()*pool.length)];
 }
 
-/* compute random outcome but slightly weighted for realism */
-function getOutcome() {
-  // weight array: more singles and dots, fewer 6s
-  const pool = [0,0,0,1,1,1,2,2,3,4,4,6,'W'];
-  return randChoice(pool);
-}
+/* state for each over and balls */
+let over1Balls=0, over2Balls=0;
+let isAnimating = false;
 
-/* animate one delivery: ball bowled from bowler to batter,
-   bat swings automatically and depending on random outcome ball is hit or missed */
-function deliverBall(callback){
+/* create ball and animate from bowler to batter */
+function bowlBall(manual=false, onBallDone){
   if(isAnimating) return;
   isAnimating = true;
-  // decide sides
-  const pandaBatting = (innings === 1);
-  // bowler and batter positions
+  // who bowls?
+  const pandaBatting = (inning === 1);
   const bowlerX = pandaBatting ? rightX : leftX;
-  const bowlerY = pitchY - 130;
+  const bowlerY = pitchY - 140;
   const batterX = pandaBatting ? leftX : rightX;
   const batterY = pitchY - 40;
 
-  // create ball initial
-  ball = { x: bowlerX, y: bowlerY, vx:0, vy:0, state:'bowling' };
+  // create ball
+  ballState = { x: bowlerX, y: bowlerY, vx:0, vy:0, state:'bowling' };
 
-  // compute travel time and velocity to reach batter (approx)
-  const targetX = batterX + (pandaBatting ? 18 : -18); // land near batter
+  const travelFrames = 36 + Math.floor(Math.random()*10);
+  const targetX = batterX + (pandaBatting ? 18 : -18);
   const targetY = batterY - 4;
-  const travelFrames = 36 + Math.floor(Math.random()*8); // bowling speed variation
-  const vx = (targetX - ball.x) / travelFrames;
-  const vy = (targetY - ball.y) / travelFrames;
+  const vx = (targetX - ballState.x) / travelFrames;
+  const vy = (targetY - ballState.y) / travelFrames;
 
-  // outcome
-  const outcome = getOutcome(); // 0,1,2,3,4,6,'W'
-  // if wicket, create special flag to animate
+  // outcome decided now but hit depends on manual hit timing for panda batting
+  const outcome = weightedOutcome();
   const isWicket = (outcome === 'W');
+  let frame=0;
+  let hitRegistered = false;
+  let userRequestedHit = false; // for Panda batting (manual), user clicks 'HIT' to register
+  let autoBatWillTry = false;   // for bat automatic in over2
 
-  // prepare bat swing animation: rotate a bit then back
-  const swingFrames = 10;
-  let frame = 0;
+  // If manual parameter is true, bowling is started by manual click; else automatically called
+  // For Over1 (panda batting manual): player must press HIT while ball in hit window
+  // For Over2 (you batting auto): batter will auto-swing when ball near
 
-  // animate frames
   function step(){
     frame++;
-    // bowling phase
     if(frame <= travelFrames){
-      ball.x += vx;
-      ball.y += vy;
+      ballState.x += vx; ballState.y += vy;
     }
-    // when ball reaches batter area (frame == travelFrames) -> swing
+
+    // when ball reaches batter zone
     if(frame === travelFrames){
-      // play bat swing visual: a short rotation
-      // if hit (outcome != 'W' && outcome != 0), ball will be flung
-      const hit = !isWicket && outcome !== 0;
-      // if 0 it's dot ball (missed or defended)
-      if(hit){
-        // compute fly-away trajectory
-        // direction depends on batter side: if panda batting (left), ball flies to right; else to left
+      // allow a small window for hitting, then determine flight
+      // For Panda batting (inning===1): check if user clicked 'HIT' flag (userRequestedHit)
+      // For You batting (inning===2): autoBatWillTry true -> automatic attempt
+      const hit = (inning === 1) ? (userRequestedHit) : (outcome !== 'W'); // auto batter hits except wicket simulated
+      if(hit && outcome !== 0 && outcome !== 'W'){
+        // ball gets initial flying velocity depending on outcome
         const dir = pandaBatting ? 1 : -1;
-        // initial velocity for fly depends on outcome
-        const speed = (outcome === 6 ? 10 : outcome === 4 ? 7 : (2+outcome));
-        ball.vx = dir * (2 + speed + Math.random()*2);
-        ball.vy = - (4 + Math.random()*3);
-        ball.state = 'flying';
+        const speed = (outcome === 6 ? 10 : outcome === 4 ? 7 : (2 + outcome));
+        ballState.vx = dir * (2 + speed + Math.random()*2);
+        ballState.vy = - (4 + Math.random()*3);
+        ballState.state = 'flying';
       } else {
-        // miss or wicket or dot -> ball slows and drops near batter
-        ball.vx = 0;
-        ball.vy = 2;
-        ball.state = isWicket ? 'wicket' : 'dead';
+        // dot or wicket
+        ballState.vx = 0; ballState.vy = isWicket ? -3 : 2;
+        ballState.state = isWicket ? 'wicket' : 'dead';
       }
-
-      // show small bat swing flash
-      popupText((pandaBatting? "Panda swings" : "You swing"), batterX, batterY-40, '#ffd');
+      // show bat swing popup
+      popup(batterX, batterY, (inning===1 ? 'Panda swings' : 'You swing'), '#fff');
     }
 
-    // flying phase: update if flying
-    if(ball.state === 'flying'){
-      ball.x += ball.vx;
-      ball.y += ball.vy;
-      ball.vy += 0.25; // gravity
-      // slow down horizontal gradually
-      ball.vx *= 0.998;
-    } else if(ball.state === 'dead'){
-      ball.y += ball.vy;
-      ball.vy *= 1.01;
-    } else if(ball.state === 'wicket'){
-      // simulate ball hitting stumps and small rise
-      ball.y += ball.vy;
-      ball.vy += 0.5;
+    // if flying, apply physics
+    if(ballState.state === 'flying'){
+      ballState.x += ballState.vx; ballState.y += ballState.vy; ballState.vy += 0.18; ballState.vx *= 0.999;
+    } else if(ballState.state === 'dead' || ballState.state === 'wicket') {
+      ballState.y += ballState.vy; ballState.vy *= 1.02;
     }
 
-    // draw frame
-    render();
+    renderFrame();
 
-    // continue until ball is off screen or settled
-    const offLeft = ball.x < -40 || ball.x > stageW + 40 || ball.y > stageH + 60;
-    if((ball.state === 'flying' && offLeft) || (ball.state === 'dead' && ball.y > stageH - 10) || (ball.state === 'wicket' && frame > travelFrames + 24)){
-      // finalize outcome: update scores, show effects
-      finalizeOutcome(outcome);
+    // check terminal conditions
+    const offScreen = (ballState.x < -60 || ballState.x > W + 60 || ballState.y > H + 120);
+    if((ballState.state === 'flying' && offScreen) || (ballState.state !== 'flying' && frame > travelFrames + 40)){
+      // update scoreboard
+      finalize(outcome);
+      ballState = null;
       isAnimating = false;
-      ball = null;
-      if(callback) setTimeout(callback, 700);
+      if(onBallDone) setTimeout(onBallDone, 700);
       return;
     }
     requestAnimationFrame(step);
   }
+  // start
   requestAnimationFrame(step);
+
+  // allow external "hit" registration (only used for Panda batting manual)
+  return {
+    registerHit: function(){ userRequestedHit = true; }
+  };
 }
 
-/* small popup text */
-function popupText(text,x,y,color='#fff'){
-  // draw quickly on canvas overlay for one second
+/* popup text overlay */
+function popup(x,y,text,color='#fff'){
   const start = performance.now();
-  const dur = 800;
+  const dur = 700;
   function draw(){
     const t = performance.now() - start;
-    render(); // redraw background + ball + players
+    renderFrame();
     ctx.save();
-    ctx.font = '20px serif';
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.fillText(text, x, y - (t/dur)*30);
+    ctx.font = '18px serif'; ctx.fillStyle = color; ctx.textAlign='center';
+    ctx.fillText(text, x, y - (t/dur)*40);
     ctx.restore();
     if(t < dur) requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 }
 
-/* finalize outcome: update scoreboard and effects */
-function finalizeOutcome(outcome){
-  if(innings === 1){
-    // panda batting
+/* finalize outcome: update data and visuals */
+function finalize(outcome){
+  if(inning === 1){
     panda.balls++;
-    pandaRunsReact(outcome);
-    if(outcome === 'W') {
-      panda.wickets++;
-      popupText('WICKET!', leftX, pitchY-60, '#ff6b6b');
-    } else {
-      const r = outcome;
-      panda.runs += r;
-      if(r >= 4){
-        popupText(r + '!', leftX+80, pitchY-90, '#ffd26b');
-        launchFireworks(stageW/2, stageH/2 - 40);
-        confettiBurst();
-      } else {
-        popupText('+' + r, leftX+60, pitchY-80, '#fff');
-      }
-    }
-    // after finishing 6 balls?
+    if(outcome === 'W'){ panda.wickets++; popup(leftX, pitchY-60, 'WICKET!', '#ff6b6b'); }
+    else { panda.runs += (Number.isFinite(outcome) ? outcome : 0);
+           if(outcome >= 4){ popup(leftX+80,pitchY-90,'+'+outcome,'#ffd26b'); fireworkCenter(); confetti(); } 
+           else popup(leftX+60,pitchY-80,'+'+outcome,'#fff'); }
     if(panda.balls >= ballsPerOver){
       // switch innings
-      innings = 2;
-      messageEl.textContent = "Over complete. Now you bat! 🔁";
-      setTimeout(()=> { messageEl.textContent = '' }, 1600);
-    } else {
-      messageEl.textContent = `Panda scored ${outcome}`;
+      inning = 2;
+      messageEl.textContent = 'Over complete — Now You will bat (Panda will bowl manually).';
+      setupControlsForInning2();
+      refreshScoreboard();
+      return;
     }
   } else {
-    // you batting
     you.balls++;
-    if(outcome === 'W'){
-      you.wickets++;
-      popupText('WICKET!', rightX, pitchY-60, '#ff6b6b');
-    } else {
-      const r = outcome;
-      you.runs += r;
-      if(r >= 4){
-        popupText(r + '!', rightX-80, pitchY-90, '#ffd26b');
-        launchFireworks(stageW/2, stageH/2 - 40);
-        confettiBurst();
-      } else {
-        popupText('+' + r, rightX-60, pitchY-80, '#fff');
-      }
-    }
+    if(outcome === 'W'){ you.wickets++; popup(rightX, pitchY-60,'WICKET!','#ff6b6b'); }
+    else { you.runs += (Number.isFinite(outcome) ? outcome : 0);
+           if(outcome >=4){ popup(rightX-80,pitchY-90,'+'+outcome,'#ffd26b'); fireworkCenter(); confetti(); }
+           else popup(rightX-60,pitchY-80,'+'+outcome,'#fff'); }
     if(you.balls >= ballsPerOver){
       // match end
       setTimeout(endMatch, 700);
-    } else {
-      messageEl.textContent = `You scored ${outcome}`;
+      refreshScoreboard();
+      return;
     }
   }
   refreshScoreboard();
 }
 
-/* small reactive tiny animation or sound placeholder for panda runs (no sound used) */
-function pandaRunsReact(outcome){ /* placeholder - could add sound */ }
+/* firework around center */
+function fireworkCenter(){ fireworkBurst(W/2, H/2 - 60); }
 
-/* render function draws pitch, players, stumps, bat & ball */
-function render(){
-  // clear
-  ctx.clearRect(0,0,stageW,stageH);
-  // static ground and pitch
-  drawStatic();
+/* refresh scoreboard DOM */
+function refreshScoreboard(){
+  scoreboardEl.textContent = `Panda: ${panda.runs}/${panda.wickets} (${panda.balls})   |   You: ${you.runs}/${you.wickets} (${you.balls})   |   Inning: ${inning===1? 'Panda batting':'You batting'}`;
+}
+
+/* render frame: pitch, players, bat, ball */
+function renderFrame(){
+  ctx.clearRect(0,0,W,H);
+  // pitch + ground
+  ctx.fillStyle = 'rgba(10,70,20,0.34)'; ctx.fillRect(0, H*0.36, W, H*0.64);
+  const pw = W*0.5; ctx.fillStyle='rgba(240,230,180,0.06)'; ctx.fillRect((W-pw)/2, pitchY-40, pw, 80);
+  // crease
+  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo((W-pw)/2+30,pitchY); ctx.lineTo((W-pw)/2+pw-30,pitchY); ctx.stroke();
+  drawStumps(leftX, pitchY+12); drawStumps(rightX, pitchY+12);
   // players
-  drawPlayers();
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(leftX, pitchY-34, 14,0,Math.PI*2); ctx.fill(); ctx.fillRect(leftX-10,pitchY-20,20,28);
+  ctx.beginPath(); ctx.arc(rightX, pitchY-34, 14,0,Math.PI*2); ctx.fill(); ctx.fillRect(rightX-10,pitchY-20,20,28);
 
-  // draw bat for left batter (panda) and right batter (you)
-  // automatic small swing: when ball near, rotate a little
-  // determine simple swing angle pulses based on ball state
+  // draw bats: slight automatic rotation if ball approaching
   let batAngleLeft = 0, batAngleRight = 0;
-  if(ball){
-    // if ball in approach toward left batter
-    if(innings === 1 && ball.state === 'bowling' && ball.x < (leftX + 120)){
-      batAngleLeft = -0.9; // swing
-    }
-    if(innings === 1 && ball.state === 'flying' && ball.x > leftX){
-      batAngleLeft = -0.4;
-    }
-    // when you batting (innings===2)
-    if(innings === 2 && ball.state === 'bowling' && ball.x > (rightX - 120)){
-      batAngleRight = 0.9;
-    }
-    if(innings === 2 && ball.state === 'flying' && ball.x < rightX){
-      batAngleRight = 0.4;
-    }
+  if(ballState){
+    if(inning===1 && ballState.state==='bowling' && ballState.x < leftX + 120) batAngleLeft = -0.9;
+    if(inning===1 && ballState.state==='flying' && ballState.x > leftX) batAngleLeft = -0.4;
+    if(inning===2 && ballState.state==='bowling' && ballState.x > rightX - 120) batAngleRight = 0.9;
+    if(inning===2 && ballState.state==='flying' && ballState.x < rightX) batAngleRight = 0.4;
   }
-  // draw bats near respective batters
-  drawBat(leftX+18, pitchY-26, batAngleLeft, '#e6b17e');
-  drawBat(rightX-18, pitchY-26, -batAngleRight, '#e6b17e');
+  drawBat(leftX+18, pitchY-26, batAngleLeft);
+  drawBat(rightX-18, pitchY-26, -batAngleRight);
 
-  // draw ball on top
-  drawBall(ball);
+  // draw ball if present
+  drawBall(ballState);
 }
 
-/* start a cycle of deliveries automatically, skipping if animation busy */
-function runMatch(){
-  // schedule next ball if any left
-  if(innings === 1 && panda.balls < ballsPerOver){
-    // bowl now
-    deliverBall(()=> {
-      // small pause then next ball
-      setTimeout(runMatch, 800);
+/* ---------- Manual control logic ---------- */
+
+/* Over1 (Panda batting manual): ball is bowled automatically every ~2s.
+   Player must click "HIT" while ball is in the hitting window (close to batter) to register as hit.
+*/
+let currentDelivery = null;
+function setupControlsForInning1(){
+  manualControls.innerHTML = ''; // show HIT button
+  const hitBtn = document.createElement('button'); hitBtn.className='big-btn'; hitBtn.textContent='HIT (for Panda bat)';
+  manualControls.appendChild(hitBtn);
+  messageEl.textContent = 'Over 1: Panda batting — press HIT when ball is near to attempt a hit.';
+  // automatic bowling schedule
+  function autoBowler(){
+    if(inning !== 1 || panda.balls >= ballsPerOver || isMatchOver) return;
+    // bowl a delivery
+    currentDelivery = bowlBall(false, ()=> {
+      currentDelivery = null;
+      // next delivery after a short delay
+      if(inning ===1 && panda.balls < ballsPerOver) setTimeout(autoBowler, 900);
     });
-  } else if(innings === 2 && you.balls < ballsPerOver){
-    deliverBall(()=> {
-      setTimeout(runMatch, 800);
-    });
-  } else if(innings === 1 && panda.balls >= ballsPerOver){
-    // switch to you batting and continue
-    innings = 2;
-    setTimeout(runMatch, 700);
-  } else {
-    // both overs done handled in finalizeOutcome/endMatch
   }
+  // start first delivery in a moment
+  setTimeout(autoBowler, 800);
+
+  // when user presses HIT, register if a delivery is active and ball is close
+  hitBtn.addEventListener('click', ()=> {
+    if(currentDelivery && ballState){
+      // check if ball is in "hit window": near batter x distance
+      const batterX = leftX;
+      if(Math.abs(ballState.x - batterX) < 110){
+        // register hit
+        currentDelivery.registerHit();
+        popup(batterX, pitchY-60, 'Hit registered!', '#ffd');
+      } else {
+        popup(leftX, pitchY-60, 'Too early/late', '#f88');
+      }
+    } else {
+      popup(leftX, pitchY-60, 'No ball right now', '#f88');
+    }
+  }, { once: false });
 }
 
-/* finalize and show result & quiz */
+/* Over2: You bat automatically, but Panda bowls manually (she presses BOWL) */
+let awaitingManualBowl = false;
+function setupControlsForInning2(){
+  manualControls.innerHTML = '';
+  const bowlBtn = document.createElement('button'); bowlBtn.className='big-btn red'; bowlBtn.textContent='BOWL (Panda releases)';
+  manualControls.appendChild(bowlBtn);
+  messageEl.textContent = 'Over 2: You batting (auto). Panda should press BOWL to deliver each ball.';
+
+  bowlBtn.addEventListener('click', ()=> {
+    if(isAnimating) return; // prevent double bowl
+    if(you.balls >= ballsPerOver) return;
+    // create delivery where outcome will be decided internally
+    bowlBall(true, ()=> {
+      // after delivery complete, allow next
+      if(you.balls < ballsPerOver) messageEl.textContent = `Ball ${you.balls}/${ballsPerOver} finished — press BOWL for next`;
+    });
+  });
+}
+
+/* ---------- End match ---------- */
 function endMatch(){
-  // show result
-  if(you.runs > panda.runs){
-    messageEl.innerHTML = `🎉 You Win! ${you.runs} - ${panda.runs}`;
-  } else if (you.runs < panda.runs){
-    messageEl.innerHTML = `🐼 Panda Wins! ${panda.runs} - ${you.runs}`;
-  } else {
-    messageEl.innerHTML = `🤝 Match Tied ${you.runs} all`;
-  }
-  // grand celebration
-  launchFireworks(stageW/2, stageH/2 - 60);
-  confettiBurst();
-  // show quiz after small delay
-  setTimeout(()=> {
-    document.getElementById('quiz').style.display = 'block';
-  }, 1800);
+  isMatchOver = true;
+  const winMsg = (you.runs > panda.runs) ? `🎉 You Win! ${you.runs} - ${panda.runs}` :
+                 (you.runs < panda.runs) ? `🐼 Panda Wins! ${panda.runs} - ${you.runs}` : `🤝 Match Tied ${you.runs}`;
+  messageEl.textContent = winMsg;
+  fireworkCenter(); confetti();
+  // show quiz after short delay
+  setTimeout(()=> { quizEl.style.display = 'block'; manualControls.innerHTML=''; }, 1400);
 }
 
-/* quiz submit handler */
-document.getElementById('quizSubmit').addEventListener('click', ()=> {
+/* quiz handling */
+quizSubmit.addEventListener('click', ()=> {
   const v = document.getElementById('quizInput').value.trim();
   if(v.length>0) window.location.href = 'page13.html';
 });
 
-/* initial draw and start */
+/* ---------- Start the match ---------- */
 refreshScoreboard();
-render();
+renderFrame();
 setTimeout(()=> {
-  messageEl.textContent = "Play starts — Panda batting first...";
-  setTimeout(()=> runMatch(), 900);
-}, 600);
+  messageEl.textContent = 'Starting — Over 1: Panda batting (you press HIT to register hits).';
+  setupControlsForInning1();
+  // start automatic bowling for Over1 is inside setupControlsForInning1
+}, 700);
 
 </script>
 </body>
