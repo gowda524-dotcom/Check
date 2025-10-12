@@ -48,36 +48,61 @@
             padding: 0 15px;
         }
 
-        /* --- Video Container --- */
-        #video-container {
+        /* --- Image Slideshow Container (NEW) --- */
+        #slideshow-container {
             position: relative;
             z-index: 20;
             width: 90vw;
             max-width: 500px;
+            height: 55vh; /* Set a fixed height for the slideshow area */
             border-radius: 20px;
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.7);
             overflow: hidden;
+            margin-bottom: 30px; /* Space between slideshow and button */
         }
-
-        #final-video {
+        
+        .slide-image {
             width: 100%;
-            height: auto;
-            display: block;
+            height: 100%;
+            object-fit: cover; /* Ensures image covers the container */
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .slide-image.active {
+            opacity: 1;
         }
 
-        /* --- Letter Form Modal (NEW FOCUS) --- */
+        /* --- Letter Button (FIXED PLACEMENT) --- */
+        #show-letter-button {
+            z-index: 60; 
+            padding: 15px 35px; 
+            font-size: 1.4em; 
+            font-weight: bold; 
+            background-color: #FFD700; 
+            color: #1a003a; 
+            border-radius: 50px; 
+            margin-top: 20px; /* Use margin for spacing */
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px #FFD700; 
+            animation: pulse 1.5s infinite alternate;
+            cursor: pointer;
+        }
+
+        /* --- Letter Form Modal --- */
         #letter-form-modal {
             position: fixed; 
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000; 
-            background: rgba(255, 20, 147, 0.98); /* Deep Pink Modal */
+            background: rgba(255, 20, 147, 0.98); 
             padding: 35px;
             border-radius: 20px;
             width: 90%;
             max-width: 550px;
-            display: none; /* Starts hidden */
+            display: none; 
             flex-direction: column;
             align-items: center;
             box-shadow: 0 0 40px #FFD700, 0 0 20px white;
@@ -125,7 +150,7 @@
             padding: 15px 35px;
             font-size: 1.5em;
             font-weight: bold;
-            background-color: #00FF7F; /* Spring Green */
+            background-color: #00FF7F; 
             color: #1a003a;
             border: none;
             border-radius: 50px;
@@ -188,18 +213,19 @@
         This is the last Cheek, but the first of the rest of our journey ❤️
     </p>
     
-    <div id="video-container">
-        <video id="final-video" src="FinalMessage.mp4" autoplay loop muted playsinline controls></video>
+    <div id="slideshow-container">
+        <img class="slide-image active" src="L1.jpg" alt="Final Photo 1">
+        <img class="slide-image" src="L2.jpg" alt="Final Photo 2">
     </div>
 
-    <button id="show-letter-button" style="z-index: 60; padding: 15px 35px; font-size: 1.4em; font-weight: bold; background-color: #FFD700; color: #1a003a; border-radius: 50px; margin-top: 20px; box-shadow: 0 0 20px #FFD700; animation: pulse 1.5s infinite alternate;">
+    <button id="show-letter-button">
         Start My Final Message 📝
     </button>
 
     <div id="letter-form-modal">
         <p id="form-label">
             <strong>The Final Letter to Your Gem 💎</strong>
-            "This entire birthday journey was a reflection of you. Now, it's your turn. Write a letter to me, your Gem, describing your honest perspective: <strong>What are the unique positive qualities (like loyalty, humor, or kindness) you admire most in me?</strong> And in the spirit of honesty and growth, **what is one area (a 'negative' or a challenge) that you believe I could work on?** Let your words be a true reflection of our bond. (Please write more than 100 words to make it count!)"
+            "This entire birthday journey was a reflection of you. Now, it's your turn. Write a letter to me, your Gem, describing your honest perspective: **What are the unique positive qualities (like loyalty, humor, or kindness) you admire most in me?** And in the spirit of honesty and growth, **what is one area (a 'negative' or a challenge) that you believe I could work on?** Let your words be a true reflection of our bond. (Please write more than 100 words to make it count!)"
         </p>
         
         <form id="final-letter-form" action="https://formspree.io/f/xwprrdqy" method="POST">
@@ -217,15 +243,25 @@
             const body = document.body;
             const music = document.getElementById('bgMusic');
             const musicTrigger = document.getElementById('music-trigger');
-            const finalVideo = document.getElementById('final-video');
             const showLetterButton = document.getElementById('show-letter-button');
             const letterModal = document.getElementById('letter-form-modal');
             const finalLetterForm = document.getElementById('final-letter-form');
+            const slides = document.querySelectorAll('.slide-image');
             
             let musicStarted = false;
             let effectIntervals = []; 
+            let currentSlide = 0;
 
-            // --- 1. Music Autoplay and Effects Start ---
+            // --- 1. Slideshow Logic (NEW) ---
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            // Cycle every 5 seconds
+            const slideshowInterval = setInterval(nextSlide, 5000); 
+
+            // --- 2. Music Autoplay and Effects Start ---
             const startContent = () => {
                 if (!musicStarted) {
                     music.volume = 0.6; 
@@ -237,8 +273,6 @@
                     });
                 }
                 startGrandEffects();
-                finalVideo.muted = false; 
-                finalVideo.play().catch(e => console.error("Video play failed:", e));
             };
 
             musicTrigger.addEventListener('click', startContent, { once: true }); 
@@ -246,11 +280,13 @@
             music.play().then(startContent).catch(e => {});
 
 
-            // --- 2. Button Action: Show the Form ---
+            // --- 3. Button Action: Show the Form ---
             showLetterButton.addEventListener('click', () => {
-                finalVideo.pause();
+                // Stop the slideshow when the form appears
+                clearInterval(slideshowInterval); 
+                
                 showLetterButton.style.display = 'none';
-                document.getElementById('video-container').style.display = 'none';
+                document.getElementById('slideshow-container').style.display = 'none';
                 document.getElementById('main-header').style.display = 'none';
                 
                 // Show the modal
@@ -258,11 +294,11 @@
             });
 
 
-            // --- 3. Form Submission (Sends Email via Formspree) ---
+            // --- 4. Form Submission (Sends Email via Formspree) ---
             finalLetterForm.addEventListener('submit', async (e) => {
                 e.preventDefault(); 
                 
-                // Basic word count check (optional, but requested for 100 words)
+                // Word count check
                 const letterContent = document.getElementById('letter-content').value;
                 if (letterContent.split(/\s+/).length < 100) {
                      alert("Please write a more detailed letter (aim for over 100 words) to complete this journey!");
@@ -295,7 +331,7 @@
             });
 
 
-            // --- 4. Grand Effects Functions (for brevity, including only start/stop) ---
+            // --- 5. Grand Effects Functions (omitted for brevity, but same as previous) ---
             const confettiColors = ['#FF69B4', '#FFD700', '#FFFFFF', '#00FF7F', '#4CAF50', '#8A2BE2', '#FF1493'];
             const floatingEmojis = ['💖', '💕', '🥰', '😍', '✨', '🌟', '🎉', '🎈', '❤️', '😘', '👑', '🎂', '🥳', '🤩', '🫶', '🤗', '😚', '💙', '🫂', '🎊']; 
             
