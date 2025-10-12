@@ -1,488 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Page12 — Realistic 2-over Cricket (Interactive)</title>
-<style>
-  :root{ --stage-w:1000px; --stage-h:520px; }
-  html,body{height:100%;margin:0;background:#000;font-family:Arial,Helvetica,sans-serif;color:#fff}
-  body{
-    background: url('stadium.jpg') center/cover no-repeat fixed;
-    display:flex;flex-direction:column;align-items:center;
-  }
-  header{ text-align:center; margin-top:14px; text-shadow:0 4px 12px rgba(0,0,0,.6) }
-  header h1{margin:0;font-size:26px}
-  header p{margin:6px 0 0; font-weight:600; opacity:.95}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 44: The Grand Finale Letter</title>
+    
+    <style>
+        /* --- General Setup & Theme --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif; 
+            background: radial-gradient(circle, #5e0279 0%, #1e003a 100%); 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; 
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            text-align: center;
+            position: relative; 
+            overflow: hidden; 
+        }
 
-  .stage-wrap{ width:var(--stage-w); max-width:calc(100% - 20px); height:var(--stage-h); margin:18px 0; position:relative; border-radius:12px; overflow:visible; }
-  canvas#stage{ width:100%; height:100%; border-radius:12px; display:block; background: rgba(0,0,0,0.3); box-shadow:0 20px 60px rgba(0,0,0,.6) }
+        /* --- Music Autoplay Trigger --- */
+        #music-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999; 
+            cursor: pointer;
+            background: rgba(0,0,0,0); 
+        }
 
-  .info { width:var(--stage-w); max-width:calc(100% - 20px); display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:6px;}
-  .scoreboard { background: rgba(0,0,0,0.6); padding:10px 14px; border-radius:10px; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,.6) }
-  .controls { background: rgba(0,0,0,0.6); padding:8px 12px; border-radius:10px; display:flex; gap:8px; align-items:center;}
-  button { font-weight:700; border-radius:8px; border:none; padding:8px 12px; cursor:pointer }
-  .playBtn { background:#ff5fa8; color:#fff }
-  .muteBtn { background:#444; color:#fff }
+        /* --- Header Text (Final Message) --- */
+        #main-header {
+            position: relative;
+            z-index: 50; 
+            font-size: 2.8em; 
+            font-weight: 900;
+            color: #FFC0CB; 
+            margin-top: 25px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #FFD700, 0 0 30px #FFC0CB;
+            padding: 0 15px;
+        }
 
-  .message { margin-top:8px; font-weight:800; min-height:28px; text-align:center; text-shadow:0 3px 10px rgba(0,0,0,.6) }
+        /* --- Video Container --- */
+        #video-container {
+            position: relative;
+            z-index: 20;
+            width: 90vw;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.7);
+            overflow: hidden;
+        }
 
-  /* control areas for manual actions */
-  .manual-controls { display:flex; gap:12px; margin-top:10px; align-items:center }
-  .big-btn { font-size:18px; padding:12px 18px; border-radius:10px; background:deepskyblue; color:#000; font-weight:800; cursor:pointer }
-  .big-btn.red { background:crimson; color:#fff }
+        #final-video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
 
-  /* quiz */
-  .quiz { display:none; margin-top:12px; background:rgba(0,0,0,0.7); padding:14px; border-radius:12px; width:420px; max-width:94%; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.5) }
-  .quiz input{ width:68%; padding:8px; border-radius:8px; border:none; font-size:16px }
-  .quiz button{ padding:8px 12px; margin-left:8px; background:limegreen; border-radius:8px; font-weight:700; color:#fff; border:none; cursor:pointer }
+        /* --- Letter Form Modal (NEW FOCUS) --- */
+        #letter-form-modal {
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000; 
+            background: rgba(255, 20, 147, 0.98); /* Deep Pink Modal */
+            padding: 35px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 550px;
+            display: none; /* Starts hidden */
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 40px #FFD700, 0 0 20px white;
+            animation: popIn 0.5s forwards;
+            pointer-events: auto; 
+            color: white; 
+        }
+        
+        @keyframes popIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
 
-  /* floating emoji style */
-  .floating { position:absolute; z-index:90; pointer-events:none; font-size:28px; }
+        #form-label {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #FFFF00;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-shadow: 1px 1px 2px #333;
+        }
+        
+        #form-label strong {
+            font-size: 1.3em;
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 900;
+            color: #FFFFFF;
+        }
 
-  /* responsive */
-  @media (max-width:760px){
-    header h1{font-size:20px}
-    .big-btn{font-size:16px;padding:10px 14px}
-  }
-</style>
+        #letter-content {
+            width: 95%;
+            height: 200px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid #FFFFFF;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            resize: none;
+            background: #FFF0F5;
+            color: #333;
+        }
+
+        #send-button {
+            padding: 15px 35px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #00FF7F; /* Spring Green */
+            color: #1a003a;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+
+        /* --- Grand Effects CSS (Run Continuously) --- */
+        .floating-emoji, .confetti-fall, .firework, .firework-particle {
+            position: fixed; 
+            z-index: 1; 
+            pointer-events: none; 
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 0; } 
+            50% { transform: translateY(50vh) rotate(15deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(-15deg); opacity: 0; }
+        }
+        
+        .floating-emoji {
+            font-size: 2.5em; 
+            animation: float 10s linear infinite; 
+        }
+        
+        @keyframes confetti-fall-slow {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti-fall {
+            animation: confetti-fall-slow 15s linear infinite;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 8px; height: 8px;
+            background-color: #FFD700; 
+            border-radius: 50%;
+            box-shadow: 0 0 10px #FFD700, 0 0 20px #ff0;
+            animation: fireworkBurst 1s forwards ease-out;
+            opacity: 0;
+            z-index: 5; 
+        }
+
+        @keyframes fireworkBurst {
+            0% { transform: scale(0); opacity: 1; }
+            20% { opacity: 1; }
+            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Interactive Match — You vs Panda 🐼 (2 overs)</h1>
-    <p>Over 1: Panda batting (manual) — Over 2: You batting (auto). Controls change accordingly.</p>
-  </header>
+    <audio id="bgMusic" src="Page44.mp3" loop preload="auto"></audio>
 
-  <div class="stage-wrap">
-    <canvas id="stage" width="1000" height="520"></canvas>
-  </div>
+    <div id="music-trigger"></div>
 
-  <div class="info">
-    <div class="scoreboard" id="scoreboard">Panda: 0/0 (0) &nbsp; | &nbsp; You: 0/0 (0)</div>
-    <div class="controls">
-      <button id="playAudio" class="playBtn">▶ Play Music</button>
-      <button id="muteAudio" class="muteBtn">Mute</button>
+    <p id="main-header">
+        This is the last Cheek, but the first of the rest of our journey ❤️
+    </p>
+    
+    <div id="video-container">
+        <video id="final-video" src="FinalMessage.mp4" autoplay loop muted playsinline controls></video>
     </div>
-  </div>
 
-  <div class="message" id="message">Match will start shortly...</div>
+    <button id="show-letter-button" style="z-index: 60; padding: 15px 35px; font-size: 1.4em; font-weight: bold; background-color: #FFD700; color: #1a003a; border-radius: 50px; margin-top: 20px; box-shadow: 0 0 20px #FFD700; animation: pulse 1.5s infinite alternate;">
+        Start My Final Message 📝
+    </button>
 
-  <div class="manual-controls" id="manualControls">
-    <!-- Stage-specific controls appear here -->
-    <!-- Over1 (Panda batting) shows: "HIT" button for player to click to let Panda attempt hit -->
-    <!-- Over2 (You batting) shows: "BOWL" button that Panda should press to release -->
-  </div>
+    <div id="letter-form-modal">
+        <p id="form-label">
+            <strong>The Final Letter to Your Gem 💎</strong>
+            "This entire birthday journey was a reflection of you. Now, it's your turn. Write a letter to me, your Gem, describing your honest perspective: <strong>What are the unique positive qualities (like loyalty, humor, or kindness) you admire most in me?</strong> And in the spirit of honesty and growth, **what is one area (a 'negative' or a challenge) that you believe I could work on?** Let your words be a true reflection of our bond. (Please write more than 100 words to make it count!)"
+        </p>
+        
+        <form id="final-letter-form" action="https://formspree.io/f/xwprrdqy" method="POST">
+            <input type="hidden" name="_subject" value="A Birthday Letter from Your Bestest Friend! 💌">
+            <textarea id="letter-content" name="Letter_Content" placeholder="Your heartfelt message here..." required></textarea>
+            <input type="text" name="Sender_Name" placeholder="Your Name (Optional)" style="width:95%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: none;">
+            <button type="submit" id="send-button">
+                Send My Letter to My Gem 📬
+            </button>
+        </form>
+    </div>
 
-  <div class="quiz" id="quiz">
-    <div style="font-weight:800; margin-bottom:8px">Happy yaa Panda 🤗??</div>
-    <input id="quizInput" placeholder="Type anything..." />
-    <button id="quizSubmit">Submit</button>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const music = document.getElementById('bgMusic');
+            const musicTrigger = document.getElementById('music-trigger');
+            const finalVideo = document.getElementById('final-video');
+            const showLetterButton = document.getElementById('show-letter-button');
+            const letterModal = document.getElementById('letter-form-modal');
+            const finalLetterForm = document.getElementById('final-letter-form');
+            
+            let musicStarted = false;
+            let effectIntervals = []; 
 
-  <!-- audio -->
-  <audio id="bgAudio" src="page12.mp3" loop></audio>
+            // --- 1. Music Autoplay and Effects Start ---
+            const startContent = () => {
+                if (!musicStarted) {
+                    music.volume = 0.6; 
+                    music.play().then(() => {
+                        musicStarted = true;
+                        musicTrigger.style.display = 'none'; 
+                    }).catch(e => {
+                        console.error("Music playback failed:", e);
+                    });
+                }
+                startGrandEffects();
+                finalVideo.muted = false; 
+                finalVideo.play().catch(e => console.error("Video play failed:", e));
+            };
 
-<script>
-/* -------------------- Setup -------------------- */
-const canvas = document.getElementById('stage');
-const ctx = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
-const scoreboardEl = document.getElementById('scoreboard');
-const messageEl = document.getElementById('message');
-const manualControls = document.getElementById('manualControls');
-const quizEl = document.getElementById('quiz');
-const quizSubmit = document.getElementById('quizSubmit');
-const bgAudio = document.getElementById('bgAudio');
-const playAudioBtn = document.getElementById('playAudio');
-const muteBtn = document.getElementById('muteAudio');
+            musicTrigger.addEventListener('click', startContent, { once: true }); 
+            music.volume = 0; 
+            music.play().then(startContent).catch(e => {});
 
-let panda = { runs:0, balls:0, wickets:0 };
-let you = { runs:0, balls:0, wickets:0 };
-let inning = 1;               // 1 => Panda batting (Over1), 2 => You batting (Over2)
-const ballsPerOver = 6;
-let ballState = null;         // holds active ball object when in motion
-let isBowling = false;        // prevents double bowl
-let isMatchOver = false;
 
-/* positions */
-const leftX = 160, rightX = W - 160;
-const pitchY = H/2 + 40;
+            // --- 2. Button Action: Show the Form ---
+            showLetterButton.addEventListener('click', () => {
+                finalVideo.pause();
+                showLetterButton.style.display = 'none';
+                document.getElementById('video-container').style.display = 'none';
+                document.getElementById('main-header').style.display = 'none';
+                
+                // Show the modal
+                letterModal.style.display = 'flex';
+            });
 
-/* music autoplay fallback */
-function tryPlayAudio(){
-  bgAudio.play().then(()=> playAudioBtn.style.display='none').catch(()=> playAudioBtn.style.display='inline-block');
-}
-window.addEventListener('load', tryPlayAudio);
-playAudioBtn.addEventListener('click', ()=> { bgAudio.play(); playAudioBtn.style.display='none'; });
-muteBtn.addEventListener('click', ()=> { bgAudio.muted = !bgAudio.muted; muteBtn.textContent = bgAudio.muted ? 'Unmute' : 'Mute'; });
 
-/* floating emojis */
-const EM = ['🐼','😚','🫶','❤️‍🩹','🙈','😊','🥰','🏏','🎆'];
-function spawnFloating(){
-  const el = document.createElement('div');
-  el.className = 'floating';
-  el.textContent = EM[Math.floor(Math.random()*EM.length)];
-  el.style.left = (5 + Math.random()*90) + '%';
-  el.style.top = (80 + Math.random()*15) + 'vh';
-  el.style.fontSize = (18 + Math.random()*24) + 'px';
-  document.body.appendChild(el);
-  el.style.transition = `transform ${4+Math.random()*4}s linear, opacity ${4+Math.random()*4}s linear`;
-  setTimeout(()=> { el.style.transform = 'translateY(-85vh)'; el.style.opacity = 0; }, 60);
-  setTimeout(()=> el.remove(), 9000);
-}
-setInterval(spawnFloating, 650);
+            // --- 3. Form Submission (Sends Email via Formspree) ---
+            finalLetterForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); 
+                
+                // Basic word count check (optional, but requested for 100 words)
+                const letterContent = document.getElementById('letter-content').value;
+                if (letterContent.split(/\s+/).length < 100) {
+                     alert("Please write a more detailed letter (aim for over 100 words) to complete this journey!");
+                     return; 
+                }
 
-/* fireworks (canvas particles) */
-function fireworkBurst(cx, cy){
-  const particles = [];
-  for(let i=0;i<36;i++){
-    particles.push({
-      x:cx, y:cy, vx:(Math.random()*2-1)*(2+Math.random()*5), vy:(Math.random()*2-1)*(2+Math.random()*5),
-      r:2+Math.random()*3, life:0, ttl:60+Math.random()*40, color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`
-    });
-  }
-  let frames=0;
-  function animate(){
-    frames++;
-    ctx.save();
-    particles.forEach((p, idx) => {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life++;
-      ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, 1 - p.life/p.ttl);
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-    });
-    ctx.globalAlpha = 1; ctx.restore();
-    if(frames < 90) requestAnimationFrame(animate);
-  }
-  requestAnimationFrame(animate);
-}
+                const button = document.getElementById('send-button');
+                button.textContent = 'Sending... 🚀';
+                button.disabled = true;
 
-/* small confetti DOM */
-function confetti(){
-  for(let i=0;i<18;i++){
-    const el = document.createElement('div');
-    el.className = 'floating';
-    el.textContent = ['🎉','🎊','✨','💖'][Math.floor(Math.random()*4)];
-    el.style.left = (40 + Math.random()*20) + '%';
-    el.style.top = (40 + Math.random()*8) + '%';
-    el.style.fontSize = (16 + Math.random()*30) + 'px';
-    document.body.appendChild(el);
-    el.style.transition = `transform ${1 + Math.random()*1}s ease-out, opacity 1s`;
-    setTimeout(()=> { el.style.transform = `translateY(${60 + Math.random()*80}px) rotate(${Math.random()*360}deg)`; el.style.opacity = 0; }, 30);
-    setTimeout(()=> el.remove(), 1400);
-  }
-}
+                // Submit data to Formspree
+                const response = await fetch(finalLetterForm.action, {
+                    method: finalLetterForm.method,
+                    body: new FormData(finalLetterForm),
+                    headers: { 'Accept': 'application/json' }
+                });
 
-/* ---------- Canvas helpers ---------- */
-function clearCanvas(){ ctx.clearRect(0,0,W,H); }
-function drawPitch(){
-  // semi-transparent ground
-  ctx.fillStyle = 'rgba(10,70,20,0.32)';
-  ctx.fillRect(0, H*0.36, W, H*0.64);
-  // pitch
-  const pw = W*0.5; ctx.fillStyle='rgba(230,210,150,0.06)'; ctx.fillRect((W-pw)/2, pitchY-40, pw, 80);
-  // crease
-  ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo((W-pw)/2+30, pitchY); ctx.lineTo((W-pw)/2+pw-30, pitchY); ctx.stroke();
-  // stumps left & right
-  drawStumps(leftX, pitchY+12); drawStumps(rightX, pitchY+12);
-}
-function drawStumps(x,y){
-  ctx.fillStyle='#c88';
-  for(let i=0;i<3;i++) ctx.fillRect(x - 6 + i*6, y-36, 4, 36);
-}
-function drawPlayers(){
-  // simple heads + bodies
-  ctx.fillStyle = '#fff';
-  // left player
-  ctx.beginPath(); ctx.arc(leftX, pitchY-34, 14, 0, Math.PI*2); ctx.fill();
-  ctx.fillRect(leftX-10, pitchY-20, 20, 28);
-  // right player
-  ctx.beginPath(); ctx.arc(rightX, pitchY-34, 14, 0, Math.PI*2); ctx.fill();
-  ctx.fillRect(rightX-10, pitchY-20, 20, 28);
-}
-function drawBat(x,y,angle){
-  ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
-  ctx.fillStyle='#e6b17e'; ctx.fillRect(0,-4,60,8); ctx.fillStyle='#5b3'; ctx.fillRect(60,-6,10,12);
-  ctx.restore();
-}
-function drawBall(b){
-  if(!b) return;
-  ctx.beginPath(); ctx.fillStyle='#fff'; ctx.arc(b.x,b.y,6,0,Math.PI*2); ctx.fill();
-}
+                if (response.ok) {
+                    button.textContent = 'Sent Successfully! ✅';
+                    setTimeout(() => {
+                        if (music) music.pause();
+                        // Redirect to the final local gift page
+                        window.location.href = 'final_gift.html'; 
+                    }, 2000); // 2 second delay before redirecting
+                } else {
+                    button.textContent = 'Error! Try Again ❌';
+                    button.disabled = false;
+                    console.error("Formspree submission failed.");
+                }
+            });
 
-/* ---------- Match logic ---------- */
-/* outcome determination (weighted) */
-function weightedOutcome(){
-  const pool = [0,0,1,1,2,2,3,4,4,6,'W']; // tweak weights
-  return pool[Math.floor(Math.random()*pool.length)];
-}
 
-/* state for each over and balls */
-let over1Balls=0, over2Balls=0;
-let isAnimating = false;
+            // --- 4. Grand Effects Functions (for brevity, including only start/stop) ---
+            const confettiColors = ['#FF69B4', '#FFD700', '#FFFFFF', '#00FF7F', '#4CAF50', '#8A2BE2', '#FF1493'];
+            const floatingEmojis = ['💖', '💕', '🥰', '😍', '✨', '🌟', '🎉', '🎈', '❤️', '😘', '👑', '🎂', '🥳', '🤩', '🫶', '🤗', '😚', '💙', '🫂', '🎊']; 
+            
+            function createFloatingEmoji() { 
+                const emoji = document.createElement('span');
+                emoji.classList.add('floating-emoji');
+                emoji.textContent = floatingEmojis[Math.floor(Math.random() * floatingEmojis.length)];
+                body.appendChild(emoji);
+                const size = Math.random() * 1.5 + 1.5;
+                emoji.style.fontSize = `${size}em`;
+                emoji.style.left = `${Math.random() * 100}vw`;
+                emoji.style.animationDuration = `${Math.random() * 8 + 10}s`;
+                emoji.style.animationDelay = `${Math.random() * 5}s`;
+                emoji.style.opacity = Math.random() * 0.5 + 0.5; 
+                setTimeout(() => emoji.remove(), 20000);
+            }
 
-/* create ball and animate from bowler to batter */
-function bowlBall(manual=false, onBallDone){
-  if(isAnimating) return;
-  isAnimating = true;
-  // who bowls?
-  const pandaBatting = (inning === 1);
-  const bowlerX = pandaBatting ? rightX : leftX;
-  const bowlerY = pitchY - 140;
-  const batterX = pandaBatting ? leftX : rightX;
-  const batterY = pitchY - 40;
+            function createConfettiPiece() { 
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti-fall');
+                body.appendChild(confetti);
 
-  // create ball
-  ballState = { x: bowlerX, y: bowlerY, vx:0, vy:0, state:'bowling' };
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.width = `${Math.random() * 8 + 4}px`; 
+                confetti.style.height = `${Math.random() * 8 + 4}px`;
+                confetti.style.borderRadius = `${Math.random() > 0.5 ? '50%' : '0'}`; 
+                
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `-10vh`; 
+                confetti.style.animationDuration = `${Math.random() * 10 + 15}s`; 
+                confetti.style.animationDelay = `${Math.random() * 5}s`;
+                confetti.style.opacity = Math.random() * 0.7 + 0.3; 
+                
+                setTimeout(() => confetti.remove(), 25000); 
+            }
 
-  const travelFrames = 36 + Math.floor(Math.random()*10);
-  const targetX = batterX + (pandaBatting ? 18 : -18);
-  const targetY = batterY - 4;
-  const vx = (targetX - ballState.x) / travelFrames;
-  const vy = (targetY - ballState.y) / travelFrames;
+            function createFirework() { 
+                const firework = document.createElement('div');
+                firework.classList.add('firework');
+                body.appendChild(firework);
 
-  // outcome decided now but hit depends on manual hit timing for panda batting
-  const outcome = weightedOutcome();
-  const isWicket = (outcome === 'W');
-  let frame=0;
-  let hitRegistered = false;
-  let userRequestedHit = false; // for Panda batting (manual), user clicks 'HIT' to register
-  let autoBatWillTry = false;   // for bat automatic in over2
+                firework.style.left = `${Math.random() * 100}vw`;
+                firework.style.bottom = `-10px`; 
 
-  // If manual parameter is true, bowling is started by manual click; else automatically called
-  // For Over1 (panda batting manual): player must press HIT while ball in hit window
-  // For Over2 (you batting auto): batter will auto-swing when ball near
+                const particleCount = Math.floor(Math.random() * 10) + 10; 
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('firework-particle');
+                    particle.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    particle.style.width = `${Math.random() * 5 + 2}px`;
+                    particle.style.height = particle.style.width;
+                    particle.style.borderRadius = '50%';
+                    particle.style.position = 'absolute';
+                    particle.style.opacity = 0; 
 
-  function step(){
-    frame++;
-    if(frame <= travelFrames){
-      ballState.x += vx; ballState.y += vy;
-    }
+                    const angle = Math.random() * 2 * Math.PI;
+                    const distance = Math.random() * 80 + 50; 
+                    const delay = Math.random() * 0.2; 
 
-    // when ball reaches batter zone
-    if(frame === travelFrames){
-      // allow a small window for hitting, then determine flight
-      // For Panda batting (inning===1): check if user clicked 'HIT' flag (userRequestedHit)
-      // For You batting (inning===2): autoBatWillTry true -> automatic attempt
-      const hit = (inning === 1) ? (userRequestedHit) : (outcome !== 'W'); // auto batter hits except wicket simulated
-      if(hit && outcome !== 0 && outcome !== 'W'){
-        // ball gets initial flying velocity depending on outcome
-        const dir = pandaBatting ? 1 : -1;
-        const speed = (outcome === 6 ? 10 : outcome === 4 ? 7 : (2 + outcome));
-        ballState.vx = dir * (2 + speed + Math.random()*2);
-        ballState.vy = - (4 + Math.random()*3);
-        ballState.state = 'flying';
-      } else {
-        // dot or wicket
-        ballState.vx = 0; ballState.vy = isWicket ? -3 : 2;
-        ballState.state = isWicket ? 'wicket' : 'dead';
-      }
-      // show bat swing popup
-      popup(batterX, batterY, (inning===1 ? 'Panda swings' : 'You swing'), '#fff');
-    }
+                    firework.appendChild(particle);
 
-    // if flying, apply physics
-    if(ballState.state === 'flying'){
-      ballState.x += ballState.vx; ballState.y += ballState.vy; ballState.vy += 0.18; ballState.vx *= 0.999;
-    } else if(ballState.state === 'dead' || ballState.state === 'wicket') {
-      ballState.y += ballState.vy; ballState.vy *= 1.02;
-    }
+                    setTimeout(() => {
+                        particle.style.transition = `transform 1s ease-out, opacity 1s ease-out`;
+                        particle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`;
+                        particle.style.opacity = 0;
+                    }, 500 + (delay * 1000)); 
+                    
+                    setTimeout(() => particle.remove(), 1600 + (delay * 1000));
+                }
+                
+                const endHeight = Math.random() * 60 + 20; 
+                firework.style.transition = `transform ${Math.random() * 0.8 + 0.7}s ease-in, opacity 0.5s ease-out 0.8s`;
+                firework.style.transform = `translateY(-${endHeight}vh)`;
+                firework.style.opacity = 1;
 
-    renderFrame();
+                setTimeout(() => {
+                    firework.style.opacity = 0; 
+                    setTimeout(() => firework.remove(), 500); 
+                }, (Math.random() * 0.8 + 0.7) * 1000); 
+            }
 
-    // check terminal conditions
-    const offScreen = (ballState.x < -60 || ballState.x > W + 60 || ballState.y > H + 120);
-    if((ballState.state === 'flying' && offScreen) || (ballState.state !== 'flying' && frame > travelFrames + 40)){
-      // update scoreboard
-      finalize(outcome);
-      ballState = null;
-      isAnimating = false;
-      if(onBallDone) setTimeout(onBallDone, 700);
-      return;
-    }
-    requestAnimationFrame(step);
-  }
-  // start
-  requestAnimationFrame(step);
-
-  // allow external "hit" registration (only used for Panda batting manual)
-  return {
-    registerHit: function(){ userRequestedHit = true; }
-  };
-}
-
-/* popup text overlay */
-function popup(x,y,text,color='#fff'){
-  const start = performance.now();
-  const dur = 700;
-  function draw(){
-    const t = performance.now() - start;
-    renderFrame();
-    ctx.save();
-    ctx.font = '18px serif'; ctx.fillStyle = color; ctx.textAlign='center';
-    ctx.fillText(text, x, y - (t/dur)*40);
-    ctx.restore();
-    if(t < dur) requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-}
-
-/* finalize outcome: update data and visuals */
-function finalize(outcome){
-  if(inning === 1){
-    panda.balls++;
-    if(outcome === 'W'){ panda.wickets++; popup(leftX, pitchY-60, 'WICKET!', '#ff6b6b'); }
-    else { panda.runs += (Number.isFinite(outcome) ? outcome : 0);
-           if(outcome >= 4){ popup(leftX+80,pitchY-90,'+'+outcome,'#ffd26b'); fireworkCenter(); confetti(); } 
-           else popup(leftX+60,pitchY-80,'+'+outcome,'#fff'); }
-    if(panda.balls >= ballsPerOver){
-      // switch innings
-      inning = 2;
-      messageEl.textContent = 'Over complete — Now You will bat (Panda will bowl manually).';
-      setupControlsForInning2();
-      refreshScoreboard();
-      return;
-    }
-  } else {
-    you.balls++;
-    if(outcome === 'W'){ you.wickets++; popup(rightX, pitchY-60,'WICKET!','#ff6b6b'); }
-    else { you.runs += (Number.isFinite(outcome) ? outcome : 0);
-           if(outcome >=4){ popup(rightX-80,pitchY-90,'+'+outcome,'#ffd26b'); fireworkCenter(); confetti(); }
-           else popup(rightX-60,pitchY-80,'+'+outcome,'#fff'); }
-    if(you.balls >= ballsPerOver){
-      // match end
-      setTimeout(endMatch, 700);
-      refreshScoreboard();
-      return;
-    }
-  }
-  refreshScoreboard();
-}
-
-/* firework around center */
-function fireworkCenter(){ fireworkBurst(W/2, H/2 - 60); }
-
-/* refresh scoreboard DOM */
-function refreshScoreboard(){
-  scoreboardEl.textContent = `Panda: ${panda.runs}/${panda.wickets} (${panda.balls})   |   You: ${you.runs}/${you.wickets} (${you.balls})   |   Inning: ${inning===1? 'Panda batting':'You batting'}`;
-}
-
-/* render frame: pitch, players, bat, ball */
-function renderFrame(){
-  ctx.clearRect(0,0,W,H);
-  // pitch + ground
-  ctx.fillStyle = 'rgba(10,70,20,0.34)'; ctx.fillRect(0, H*0.36, W, H*0.64);
-  const pw = W*0.5; ctx.fillStyle='rgba(240,230,180,0.06)'; ctx.fillRect((W-pw)/2, pitchY-40, pw, 80);
-  // crease
-  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo((W-pw)/2+30,pitchY); ctx.lineTo((W-pw)/2+pw-30,pitchY); ctx.stroke();
-  drawStumps(leftX, pitchY+12); drawStumps(rightX, pitchY+12);
-  // players
-  ctx.fillStyle='#fff';
-  ctx.beginPath(); ctx.arc(leftX, pitchY-34, 14,0,Math.PI*2); ctx.fill(); ctx.fillRect(leftX-10,pitchY-20,20,28);
-  ctx.beginPath(); ctx.arc(rightX, pitchY-34, 14,0,Math.PI*2); ctx.fill(); ctx.fillRect(rightX-10,pitchY-20,20,28);
-
-  // draw bats: slight automatic rotation if ball approaching
-  let batAngleLeft = 0, batAngleRight = 0;
-  if(ballState){
-    if(inning===1 && ballState.state==='bowling' && ballState.x < leftX + 120) batAngleLeft = -0.9;
-    if(inning===1 && ballState.state==='flying' && ballState.x > leftX) batAngleLeft = -0.4;
-    if(inning===2 && ballState.state==='bowling' && ballState.x > rightX - 120) batAngleRight = 0.9;
-    if(inning===2 && ballState.state==='flying' && ballState.x < rightX) batAngleRight = 0.4;
-  }
-  drawBat(leftX+18, pitchY-26, batAngleLeft);
-  drawBat(rightX-18, pitchY-26, -batAngleRight);
-
-  // draw ball if present
-  drawBall(ballState);
-}
-
-/* ---------- Manual control logic ---------- */
-
-/* Over1 (Panda batting manual): ball is bowled automatically every ~2s.
-   Player must click "HIT" while ball is in the hitting window (close to batter) to register as hit.
-*/
-let currentDelivery = null;
-function setupControlsForInning1(){
-  manualControls.innerHTML = ''; // show HIT button
-  const hitBtn = document.createElement('button'); hitBtn.className='big-btn'; hitBtn.textContent='HIT (for Panda bat)';
-  manualControls.appendChild(hitBtn);
-  messageEl.textContent = 'Over 1: Panda batting — press HIT when ball is near to attempt a hit.';
-  // automatic bowling schedule
-  function autoBowler(){
-    if(inning !== 1 || panda.balls >= ballsPerOver || isMatchOver) return;
-    // bowl a delivery
-    currentDelivery = bowlBall(false, ()=> {
-      currentDelivery = null;
-      // next delivery after a short delay
-      if(inning ===1 && panda.balls < ballsPerOver) setTimeout(autoBowler, 900);
-    });
-  }
-  // start first delivery in a moment
-  setTimeout(autoBowler, 800);
-
-  // when user presses HIT, register if a delivery is active and ball is close
-  hitBtn.addEventListener('click', ()=> {
-    if(currentDelivery && ballState){
-      // check if ball is in "hit window": near batter x distance
-      const batterX = leftX;
-      if(Math.abs(ballState.x - batterX) < 110){
-        // register hit
-        currentDelivery.registerHit();
-        popup(batterX, pitchY-60, 'Hit registered!', '#ffd');
-      } else {
-        popup(leftX, pitchY-60, 'Too early/late', '#f88');
-      }
-    } else {
-      popup(leftX, pitchY-60, 'No ball right now', '#f88');
-    }
-  }, { once: false });
-}
-
-/* Over2: You bat automatically, but Panda bowls manually (she presses BOWL) */
-let awaitingManualBowl = false;
-function setupControlsForInning2(){
-  manualControls.innerHTML = '';
-  const bowlBtn = document.createElement('button'); bowlBtn.className='big-btn red'; bowlBtn.textContent='BOWL (Panda releases)';
-  manualControls.appendChild(bowlBtn);
-  messageEl.textContent = 'Over 2: You batting (auto). Panda should press BOWL to deliver each ball.';
-
-  bowlBtn.addEventListener('click', ()=> {
-    if(isAnimating) return; // prevent double bowl
-    if(you.balls >= ballsPerOver) return;
-    // create delivery where outcome will be decided internally
-    bowlBall(true, ()=> {
-      // after delivery complete, allow next
-      if(you.balls < ballsPerOver) messageEl.textContent = `Ball ${you.balls}/${ballsPerOver} finished — press BOWL for next`;
-    });
-  });
-}
-
-/* ---------- End match ---------- */
-function endMatch(){
-  isMatchOver = true;
-  const winMsg = (you.runs > panda.runs) ? `🎉 You Win! ${you.runs} - ${panda.runs}` :
-                 (you.runs < panda.runs) ? `🐼 Panda Wins! ${panda.runs} - ${you.runs}` : `🤝 Match Tied ${you.runs}`;
-  messageEl.textContent = winMsg;
-  fireworkCenter(); confetti();
-  // show quiz after short delay
-  setTimeout(()=> { quizEl.style.display = 'block'; manualControls.innerHTML=''; }, 1400);
-}
-
-/* quiz handling */
-quizSubmit.addEventListener('click', ()=> {
-  const v = document.getElementById('quizInput').value.trim();
-  if(v.length>0) window.location.href = 'page13.html';
-});
-
-/* ---------- Start the match ---------- */
-refreshScoreboard();
-renderFrame();
-setTimeout(()=> {
-  messageEl.textContent = 'Starting — Over 1: Panda batting (you press HIT to register hits).';
-  setupControlsForInning1();
-  // start automatic bowling for Over1 is inside setupControlsForInning1
-}, 700);
-
-</script>
+            function startGrandEffects() {
+                effectIntervals.push(setInterval(createFloatingEmoji, 300));
+                effectIntervals.push(setInterval(createConfettiPiece, 200));
+                effectIntervals.push(setInterval(createFirework, 1500));
+            }
+        });
+    </script>
 </body>
 </html>
