@@ -14,7 +14,7 @@
             background: radial-gradient(circle, #5e0279 0%, #1e003a 100%); 
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center the modal vertically */
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             color: white;
@@ -23,14 +23,14 @@
             overflow: hidden; 
         }
 
-        /* --- Letter Form Modal (INSTANT POP-UP, Z-INDEX 1000) --- */
+        /* --- Letter Form Modal (INSTANT POP-UP, Clickable) --- */
         #letter-form-modal {
             position: fixed; 
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000; 
-            background: rgba(255, 20, 147, 0.98); /* Deep Pink Modal */
+            background: rgba(255, 20, 147, 0.98); 
             padding: 35px;
             border-radius: 20px;
             width: 90%;
@@ -40,7 +40,7 @@
             align-items: center;
             box-shadow: 0 0 40px #FFD700, 0 0 20px white;
             animation: popIn 0.5s forwards;
-            pointer-events: auto; 
+            pointer-events: auto; /* Ensures inputs are responsive */
             color: white; 
         }
         
@@ -83,7 +83,7 @@
             padding: 15px 35px;
             font-size: 1.5em;
             font-weight: bold;
-            background-color: #00FF7F; /* Spring Green */
+            background-color: #00FF7F; 
             color: #1a003a;
             border: none;
             border-radius: 50px;
@@ -119,7 +119,6 @@
             animation: confetti-fall-slow 15s linear infinite;
         }
         
-        /* Ensure background effects are under the form */
         .floating-emoji, .confetti-fall {
             z-index: 5;
         }
@@ -135,7 +134,7 @@
             "This entire birthday journey was a reflection of you. Now, it's your turn. Write a letter to me, your Gem, describing your honest perspective: **What are the unique positive qualities (like loyalty, humor, or kindness) you admire most in me?** And in the spirit of honesty and growth, **what is one area (a 'negative' or a challenge) that you believe I could work on?** Let your words be a true reflection of our bond. (Please write more than 100 words to make it count!)"
         </p>
         
-        <form id="final-letter-form" action="https://formspree.io/f/xwprrdqy" method="POST">
+        <form id="final-letter-form" action="https://formspree.io/f/xanppggz" method="POST">
             <input type="hidden" name="_subject" value="A Birthday Letter from Your Bestest Friend! 💌">
             <textarea id="letter-content" name="Letter_Content" placeholder="Your heartfelt message here (Must be over 100 words)..." required></textarea>
             <input type="text" name="Sender_Name" placeholder="Your Name (Optional)" style="width:95%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: none;">
@@ -154,7 +153,7 @@
             let musicStarted = false;
             let effectIntervals = []; 
 
-            // --- 1. Music Autoplay and Effects Start (Simplified) ---
+            // --- 1. Music Autoplay and Effects Start ---
             const startContent = () => {
                 if (!musicStarted) {
                     music.volume = 0.6; 
@@ -167,21 +166,16 @@
                 startGrandEffects();
             };
 
-            // Attempt to start music and effects immediately on load
-            // Note: Modern browsers require a user interaction to start audio, 
-            // but we'll try to start it quietly and hope for the best.
             music.volume = 0; 
             music.play().then(startContent).catch(e => {
-                // If autoplay fails, we just start the effects
                 startGrandEffects();
             });
 
 
-            // --- 2. Form Submission (Sends Email via Formspree) ---
+            // --- 2. Form Submission ---
             finalLetterForm.addEventListener('submit', async (e) => {
                 e.preventDefault(); 
                 
-                // Word count check
                 const letterContent = document.getElementById('letter-content').value;
                 if (letterContent.split(/\s+/).length < 100) {
                      alert("Please write a more detailed letter (aim for over 100 words) to complete this journey!");
@@ -192,7 +186,6 @@
                 button.textContent = 'Sending... 🚀';
                 button.disabled = true;
 
-                // Submit data to Formspree
                 const response = await fetch(finalLetterForm.action, {
                     method: finalLetterForm.method,
                     body: new FormData(finalLetterForm),
@@ -203,11 +196,10 @@
                     button.textContent = 'Sent Successfully! ✅';
                     setTimeout(() => {
                         if (music) music.pause();
-                        // Redirect to the final local gift page
                         window.location.href = 'final_gift.html'; 
-                    }, 2000); // 2 second delay before redirecting
+                    }, 2000); 
                 } else {
-                    button.textContent = 'Error! Check Mail to Confirm Form ❌';
+                    button.textContent = 'Submission Failed ❌';
                     button.disabled = false;
                     alert("A submission error occurred. Please check your email inbox (including spam) for a Formspree confirmation email to activate the form, then try again!");
                     console.error("Formspree submission failed.");
@@ -215,7 +207,7 @@
             });
 
 
-            // --- 3. Grand Effects Functions (Kept for visual appeal) ---
+            // --- 3. Grand Effects Functions ---
             const confettiColors = ['#FF69B4', '#FFD700', '#FFFFFF', '#00FF7F', '#4CAF50', '#8A2BE2', '#FF1493'];
             const floatingEmojis = ['💖', '💕', '🥰', '😍', '✨', '🌟', '🎉', '🎈', '❤️', '😘', '👑', '🎂', '🥳', '🤩', '🫶', '🤗', '😚', '💙', '🫂', '🎊']; 
             
